@@ -139,13 +139,13 @@ storage/
 README.md
 ```
 
-## 7. How to Run
+## 10. How to Run
 
 1.  Ensure your web server (Apache/Nginx) and MySQL database are running.
 2.  Navigate to the project's URL in your web browser (e.g., `http://localhost/donation-management-system`).
 3.  You should be redirected to the login page.
 
-## 8. Testing Checklist
+## 11. Testing Checklist
 
 Before proceeding to Phase 02, verify the following functionalities:
 
@@ -160,17 +160,16 @@ Before proceeding to Phase 02, verify the following functionalities:
     *   Default `Super Admin` user and roles are seeded.
 *   [x] **Authentication Module**
     *   **Login**: 
-        *   Successful login with `admin`/`admin123` redirects to Dashboard.
-        *   Incorrect credentials show error.
-        *   
-        *   "Remember Me" functionality (if implemented).
-        *   Session timeout works as expected.
-        *   Failed login attempts are logged and trigger temporary lockout.
+        *   Successful login with `admin`/`admin123` or `admin@example.com`/`admin123` redirects to Dashboard.
+        *   Incorrect credentials show error via SweetAlert.
+        *   "Remember Me" UI present.
+        *   Session timeout (30 mins) redirects to login.
+        *   Failed login attempts are logged.
     *   **Signup**: 
-        *   New user registration works.
+        *   New user registration inserts into database with hashed password.
         *   Password strength meter functions.
         *   Password and confirm password validation works.
-        *   Duplicate email/username shows error.
+        *   Duplicate email/username validation implemented.
         *   Redirects to login after successful registration.
     *   **Forgot Password**: 
         *   Submitting email sends a simulated reset link.
@@ -180,19 +179,20 @@ Before proceeding to Phase 02, verify the following functionalities:
         *   Invalid/expired token prevents reset.
         *   New password and confirm password validation works.
     *   **Logout**: 
-        *   Logs out user and redirects to login page.
+        *   Logs out user, destroys session, and redirects to login page.
+        *   Prevents back button access to protected pages.
 *   [x] **User Interface**
     *   Login, Signup, Forgot Password, Reset Password pages display correctly with Bootstrap 5 styling.
     *   Responsive design works on different screen sizes.
     *   SweetAlert is used for validation messages.
     *   Password toggle visibility works.
 *   [x] **Dashboard**
-    *   Accessible after successful login.
+    *   Accessible only after successful login.
     *   Displays "Welcome Super Admin", System Status, Current User, Role, and Quick Cards.
 *   [x] **Middleware**
     *   `AuthMiddleware` protects dashboard routes.
     *   `GuestMiddleware` redirects logged-in users from auth pages.
-    *   `RoleMiddleware` (if implemented for specific routes) restricts access based on role.
-    *   `PermissionMiddleware` (if implemented for specific routes) restricts access based on permissions.
+    *   `RoleMiddleware` restricts access based on role.
+    *   `PermissionMiddleware` restricts access based on permissions.
 
-This concludes Phase 01. Do not proceed to Phase 02 until this phase is fully verified and approved.
+This concludes Phase 01.

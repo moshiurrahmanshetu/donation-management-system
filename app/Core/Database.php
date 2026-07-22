@@ -22,7 +22,8 @@ class Database
                 PDO::ATTR_EMULATE_PREPARES => false,
             ]);
         } catch (PDOException $e) {
-            die("Connection failed: " . $e->getMessage());
+            error_log("Database Connection Error: " . $e->getMessage());
+            die("Something went wrong. Please try again later.");
         }
     }
 

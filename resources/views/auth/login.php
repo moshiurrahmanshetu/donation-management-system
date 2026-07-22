@@ -1,10 +1,11 @@
 <h4 class="text-center mb-4">Login</h4>
-<form id="loginForm">
+<form id="loginForm" method="POST" action="<?= url('login') ?>">
+    <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
     <div class="mb-3">
-        <label class="form-label">Username</label>
+        <label class="form-label">Email or Username</label>
         <div class="input-group">
             <span class="input-group-text"><i class="bi bi-person"></i></span>
-            <input type="text" name="username" class="form-control" required placeholder="Enter username">
+            <input type="text" name="username" class="form-control" required placeholder="Enter email or username">
         </div>
     </div>
     <div class="mb-3">

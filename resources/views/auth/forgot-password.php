@@ -1,6 +1,7 @@
 <h4 class="text-center mb-4">Forgot Password</h4>
 <p class="text-muted text-center mb-4">Enter your email address and we'll send you a link to reset your password.</p>
-<form id="forgotForm">
+<form id="forgotForm" method="POST" action="<?= url('forgot-password') ?>">
+    <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
     <div class="mb-4">
         <label class="form-label">Email Address</label>
         <div class="input-group">

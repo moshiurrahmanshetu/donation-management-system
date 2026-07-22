@@ -16,14 +16,17 @@ class AuthController extends Controller
 
     public function showLogin()
     {
-        if (session_has('user_id')) {
-            $this->redirect('dashboard');
-        }
+        (new \App\Middleware\GuestMiddleware())->handle();
         $this->view('auth.login');
     }
 
     public function login()
     {
+        // CSRF Validation
+        if (!validate_csrf($_POST['csrf_token'] ?? '')) {
+            $this->json(['status' => 'error', 'message' => 'Invalid CSRF token.']);
+        }
+
         $username = $_POST['username'] ?? '';
         $password = $_POST['password'] ?? '';
         $remember = isset($_POST['remember']);
@@ -35,17 +38,27 @@ class AuthController extends Controller
             $this->json(['status' => 'error', 'message' => 'Too many failed attempts. Please try again later.']);
         }
 
+        // Try finding by username first, then by email
         $user = $this->userModel->findByUsername($username);
+        if (!$user) {
+            $user = $this->userModel->findByEmail($username);
+        }
 
         if ($user && password_verify($password, $user['password'])) {
             if ($user['status'] !== 'active') {
                 $this->json(['status' => 'error', 'message' => 'Your account is inactive. Please contact admin.']);
+                exit;
             }
 
             // Success
-            session_set('user_id', $user['id']);
-            session_set('username', $user['username']);
-            session_set('user_role', $this->userModel->getRoles($user['id'])[0]['slug'] ?? 'user');
+            $_SESSION['user_id'] = $user['id'];
+            $_SESSION['username'] = $user['username'];
+            $_SESSION['email'] = $user['email'];
+            
+            $roles = $this->userModel->getRoles($user['id']);
+            $_SESSION['role_id'] = !empty($roles) ? $roles[0]['id'] : 3;
+            $_SESSION['user_role'] = !empty($roles) ? $roles[0]['slug'] : 'user';
+            $_SESSION['last_activity'] = time();
             
             $this->userModel->logLogin([
                 'user_id' => $user['id'],
@@ -61,8 +74,8 @@ class AuthController extends Controller
             $this->userModel->logLogin([
                 'user_id' => $user['id'] ?? null,
                 'username' => $username,
-                'ip_address' => $ip,
-                'user_agent' => $userAgent,
+                'ip_address' => $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0',
+                'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown',
                 'status' => 'failed'
             ]);
 
@@ -72,18 +85,24 @@ class AuthController extends Controller
 
     public function showSignup()
     {
+        (new \App\Middleware\GuestMiddleware())->handle();
         $this->view('auth.signup');
     }
 
     public function signup()
     {
+        // CSRF Validation
+        if (!validate_csrf($_POST['csrf_token'] ?? '')) {
+            $this->json(['status' => 'error', 'message' => 'Invalid CSRF token.']);
+        }
+
         $data = [
             'username' => $_POST['username'] ?? '',
             'email' => $_POST['email'] ?? '',
             'password' => password_hash($_POST['password'] ?? '', PASSWORD_BCRYPT),
             'first_name' => $_POST['first_name'] ?? '',
             'last_name' => $_POST['last_name'] ?? '',
-            'status' => 'pending' // Require verification or admin approval
+            'status' => 'active'
         ];
 
         if ($this->userModel->findByEmail($data['email'])) {
@@ -95,16 +114,33 @@ class AuthController extends Controller
         }
 
         if ($this->userModel->create($data)) {
-            $this->json(['status' => 'success', 'message' => 'Registration successful! Please wait for admin approval.', 'redirect' => url('login')]);
+            $this->json(['status' => 'success', 'message' => 'Registration successful! You can now login.', 'redirect' => url('login')]);
         } else {
-            $this->json(['status' => 'error', 'message' => 'Something went wrong.']);
+            error_log("Signup failed for: " . json_encode($data));
+            $this->json(['status' => 'error', 'message' => 'Something went wrong. Please check error logs.']);
         }
     }
 
     public function logout()
     {
+        // Clear session variables
+        $_SESSION = [];
+
+        // Delete session cookie
+        if (ini_get("session.use_cookies")) {
+            $params = session_get_cookie_params();
+            setcookie(session_name(), '', time() - 42000,
+                $params["path"], $params["domain"],
+                $params["secure"], $params["httponly"]
+            );
+        }
+
+        // Destroy session
         session_destroy();
-        $this->redirect('login');
+
+        // Redirect to login with no-cache headers (already in bootstrap)
+        header("Location: " . BASE_URL . "/login");
+        exit;
     }
 
     public function showForgotPassword()

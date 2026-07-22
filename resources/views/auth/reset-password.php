@@ -1,5 +1,6 @@
 <h4 class="text-center mb-4">Reset Password</h4>
-<form id="resetForm">
+<form id="resetForm" method="POST" action="<?= url('reset-password') ?>">
+    <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
     <input type="hidden" name="token" value="<?= $token ?>">
     <div class="mb-3">
         <label class="form-label">New Password</label>

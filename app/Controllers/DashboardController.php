@@ -9,6 +9,7 @@ class DashboardController extends Controller
 {
     public function __construct()
     {
+        // Protect all dashboard routes
         (new AuthMiddleware())->handle();
     }
 
@@ -17,8 +18,8 @@ class DashboardController extends Controller
         $data = [
             'title' => 'Dashboard',
             'user' => [
-                'username' => session_get('username'),
-                'role' => session_get('user_role')
+                'username' => $_SESSION['username'] ?? 'User',
+                'role' => $_SESSION['user_role'] ?? 'user'
             ],
             'system_status' => 'Online',
             'quick_cards' => [

@@ -34,6 +34,8 @@ class Controller
 
     protected function json($data)
     {
+        // Clear any previous output to ensure only JSON is sent
+        if (ob_get_length()) ob_clean();
         header('Content-Type: application/json');
         echo json_encode($data);
         exit;

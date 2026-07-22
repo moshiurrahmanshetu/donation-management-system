@@ -23,10 +23,32 @@ class User extends Model
 
     public function create($data)
     {
-        $sql = "INSERT INTO users (username, email, password, first_name, last_name, status) 
-                VALUES (:username, :email, :password, :first_name, :last_name, :status)";
-        $stmt = $this->db->prepare($sql);
-        return $stmt->execute($data);
+        try {
+            $this->db->beginTransaction();
+
+            $sql = "INSERT INTO users (username, email, password, first_name, last_name, status) 
+                    VALUES (:username, :email, :password, :first_name, :last_name, :status)";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute($data);
+
+            $userId = $this->db->lastInsertId();
+
+            // Assign default 'user' role (slug: 'user', id: 3 in database.sql)
+            $roleStmt = $this->db->prepare("SELECT id FROM roles WHERE slug = 'user'");
+            $roleStmt->execute();
+            $role = $roleStmt->fetch();
+            $roleId = $role ? $role['id'] : 3;
+
+            $assignRoleSql = "INSERT INTO user_roles (user_id, role_id) VALUES (?, ?)";
+            $this->db->prepare($assignRoleSql)->execute([$userId, $roleId]);
+
+            $this->db->commit();
+            return true;
+        } catch (\PDOException $e) {
+            $this->db->rollBack();
+            error_log("Signup Error: " . $e->getMessage());
+            return false;
+        }
     }
 
     public function getRoles($userId)

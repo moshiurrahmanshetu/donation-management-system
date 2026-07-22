@@ -13,7 +13,8 @@ function asset($path) {
 }
 
 function url($path = '') {
-    return BASE_URL . "/" . ltrim($path, '/');
+    $path = ltrim($path, '/');
+    return $path === '' ? BASE_URL : BASE_URL . '/' . $path;
 }
 
 function redirect($path) {
