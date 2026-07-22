@@ -21,5 +21,29 @@ $router->add('POST', 'reset-password', 'AuthController@resetPassword');
 $router->add('GET', 'dashboard', 'DashboardController@index');
 $router->add('GET', '', 'DashboardController@index');
 
+// Role Management Routes
+$router->add('GET', 'roles', 'RoleController@index');
+$router->add('GET', 'roles/list', 'RoleController@list');
+$router->add('POST', 'roles/store', 'RoleController@store');
+$router->add('GET', 'roles/edit/{id}', 'RoleController@edit');
+$router->add('POST', 'roles/update/{id}', 'RoleController@update');
+$router->add('POST', 'roles/delete/{id}', 'RoleController@delete');
+$router->add('POST', 'roles/toggle-status/{id}', 'RoleController@toggleStatus');
+$router->add('GET', 'roles/show/{id}', 'RoleController@show');
+
+// Permission Management Routes
+$router->add('GET', 'permissions', 'PermissionController@index');
+$router->add('GET', 'permissions/list', 'PermissionController@list');
+$router->add('POST', 'permissions/store', 'PermissionController@store');
+$router->add('GET', 'permissions/edit/{id}', 'PermissionController@edit');
+$router->add('POST', 'permissions/update/{id}', 'PermissionController@update');
+$router->add('POST', 'permissions/delete/{id}', 'PermissionController@delete');
+
+// Module Management Routes
+$router->add('GET', 'permissions/modules', 'PermissionController@modules');
+$router->add('GET', 'permissions/module-list', 'PermissionController@moduleList');
+$router->add('POST', 'permissions/module-store', 'PermissionController@moduleStore');
+$router->add('POST', 'permissions/module-delete/{id}', 'PermissionController@moduleDelete');
+
 $url = $_GET['url'] ?? '';
 $router->dispatch($url);

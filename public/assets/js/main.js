@@ -63,7 +63,7 @@ $(document).ready(function() {
     
     $('#sidebar .nav-link').each(function() {
         const href = $(this).attr('href');
-        if (href && (currentUrl.endsWith(href) || currentPath.endsWith(href))) {
+        if (href && href !== '#' && (currentUrl === href || currentPath === href || currentUrl.includes(href))) {
             $(this).addClass('active');
             // If it's in a submenu, expand the parent
             const parentCollapse = $(this).closest('.collapse');

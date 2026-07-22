@@ -25,15 +25,22 @@
             <div class="collapse" id="userSubmenu">
                 <nav class="nav flex-column ms-4 small">
                     <a class="nav-link py-1" href="#">Users List</a>
-                    <a class="nav-link py-1" href="#">Roles</a>
-                    <a class="nav-link py-1" href="#">Permissions</a>
+                    <a class="nav-link py-1" href="<?= url('roles') ?>">Roles List</a>
+                    <a class="nav-link py-1" href="<?= url('permissions') ?>">Permissions List</a>
                 </nav>
             </div>
 
-            <a href="#" class="nav-link">
+            <a class="nav-link" data-bs-toggle="collapse" href="#accessSubmenu" role="button">
                 <i class="bi bi-shield-lock"></i>
                 <span class="sidebar-text">Access Control</span>
+                <i class="bi bi-chevron-down ms-auto submenu-arrow small"></i>
             </a>
+            <div class="collapse" id="accessSubmenu">
+                <nav class="nav flex-column ms-4 small">
+                    <a class="nav-link py-1" href="<?= url('roles') ?>">Roles</a>
+                    <a class="nav-link py-1" href="<?= url('permissions') ?>">Permissions</a>
+                </nav>
+            </div>
 
             <div class="sidebar-heading px-4 py-2 mt-3 small text-uppercase opacity-50 sidebar-text">Modules</div>
             
