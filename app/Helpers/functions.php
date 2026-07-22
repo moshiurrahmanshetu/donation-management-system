@@ -52,3 +52,67 @@ function csrf_token() {
 function validate_csrf($token) {
     return isset($_SESSION['csrf_token']) && hash_equals($_SESSION['csrf_token'], $token);
 }
+
+function status_badge($status) {
+    $class = match($status) {
+        'active', 'success', 'online' => 'bg-success',
+        'pending', 'warning' => 'bg-warning text-dark',
+        'inactive', 'danger', 'offline' => 'bg-danger',
+        default => 'bg-secondary'
+    };
+    return "<span class='badge $class'>" . ucfirst($status) . "</span>";
+}
+
+function format_currency($amount) {
+    return '$' . number_format($amount, 2);
+}
+
+function format_date($date, $format = 'M d, Y') {
+    return date($format, strtotime($date));
+}
+
+function get_php_version() { return PHP_VERSION; }
+function get_mysql_version() {
+    $db = \App\Core\Database::getInstance()->getConnection();
+    return $db->getAttribute(\PDO::ATTR_SERVER_VERSION);
+}
+function get_server_info() { return $_SERVER['SERVER_SOFTWARE']; }
+
+function get_storage_status() {
+    $free = disk_free_space("/");
+    $total = disk_total_space("/");
+    $used = $total - $free;
+    $percent = round(($used / $total) * 100, 2);
+    return [
+        'total' => format_bytes($total),
+        'used' => format_bytes($used),
+        'free' => format_bytes($free),
+        'percent' => $percent
+    ];
+}
+
+function format_bytes($bytes, $precision = 2) {
+    $units = array('B', 'KB', 'MB', 'GB', 'TB');
+    $bytes = max($bytes, 0);
+    $pow = floor(($bytes ? log($bytes) : 0) / log(1024));
+    $pow = min($pow, count($units) - 1);
+    $bytes /= pow(1024, $pow);
+    return round($bytes, $precision) . ' ' . $units[$pow];
+}
+
+function get_total_users() {
+    $db = \App\Core\Database::getInstance()->getConnection();
+    return $db->query("SELECT COUNT(*) FROM users")->fetchColumn();
+}
+
+function get_total_roles() {
+    $db = \App\Core\Database::getInstance()->getConnection();
+    return $db->query("SELECT COUNT(*) FROM roles")->fetchColumn();
+}
+
+function get_total_permissions() {
+    $db = \App\Core\Database::getInstance()->getConnection();
+    return $db->query("SELECT COUNT(*) FROM permissions")->fetchColumn();
+}
+
+

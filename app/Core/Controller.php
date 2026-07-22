@@ -16,7 +16,7 @@ class Controller
         if (strpos($view, 'auth.') === 0) {
             $layoutFile = __DIR__ . "/../../resources/views/layouts/auth.php";
         } else {
-            $layoutFile = __DIR__ . "/../../resources/views/layouts/app.php";
+            $layoutFile = __DIR__ . "/../../resources/views/layouts/master.php";
         }
 
         if (file_exists($layoutFile)) {

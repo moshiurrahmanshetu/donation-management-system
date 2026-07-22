@@ -40,10 +40,12 @@ $(document).ready(function() {
             url: '<?= url('login') ?>',
             method: 'POST',
             data: $(this).serialize(),
+            dataType: 'json',
             success: function(response) {
                 if (response.status === 'success') {
-                    showAlert('success', 'Login successful!');
-                    setTimeout(() => window.location.href = response.redirect, 1000);
+                    showAlert('success', 'Login successful!', function() {
+                        window.location.href = response.redirect;
+                    });
                 } else {
                     showAlert('error', response.message);
                     btn.prop('disabled', false).text('Login');

@@ -26,6 +26,7 @@ $(document).ready(function() {
             url: '<?= url('forgot-password') ?>',
             method: 'POST',
             data: $(this).serialize(),
+            dataType: 'json',
             success: function(response) {
                 if (response.status === 'success') {
                     showAlert('success', response.message);

@@ -74,10 +74,12 @@ $(document).ready(function() {
             url: '<?= url('signup') ?>',
             method: 'POST',
             data: $(this).serialize(),
+            dataType: 'json',
             success: function(response) {
                 if (response.status === 'success') {
-                    showAlert('success', response.message);
-                    setTimeout(() => window.location.href = response.redirect, 2000);
+                    showAlert('success', response.message, function() {
+                        window.location.href = response.redirect;
+                    });
                 } else {
                     showAlert('error', response.message);
                     btn.prop('disabled', false).text('Sign Up');

@@ -38,6 +38,18 @@
                     <h3 class="fw-bold"><?= APP_NAME ?></h3>
                 </div>
                 <div class="card auth-card p-4">
+                    <?php if (isset($_GET['error'])): ?>
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <?= htmlspecialchars($_GET['error'] === 'invalid_token' ? 'Invalid or expired token.' : 'An error occurred.') ?>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    <?php endif; ?>
+                    <?php if (isset($_GET['timeout'])): ?>
+                        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                            Your session has expired. Please login again.
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    <?php endif; ?>
                     <?php require_once $viewFile; ?>
                 </div>
             </div>
@@ -62,13 +74,15 @@
             });
         });
 
-        function showAlert(type, message) {
+        function showAlert(type, message, callback = null) {
             Swal.fire({
                 icon: type,
                 title: type.charAt(0).toUpperCase() + type.slice(1),
                 text: message,
-                timer: 3000,
-                showConfirmButton: false
+                timer: type === 'success' ? 2000 : 3000,
+                showConfirmButton: type !== 'success'
+            }).then(() => {
+                if (callback) callback();
             });
         }
     </script>

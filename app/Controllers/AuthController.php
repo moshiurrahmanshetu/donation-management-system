@@ -117,7 +117,7 @@ class AuthController extends Controller
             $this->json(['status' => 'success', 'message' => 'Registration successful! You can now login.', 'redirect' => url('login')]);
         } else {
             error_log("Signup failed for: " . json_encode($data));
-            $this->json(['status' => 'error', 'message' => 'Something went wrong. Please check error logs.']);
+            $this->json(['status' => 'error', 'message' => 'Something went wrong. Please try again later.']);
         }
     }
 
@@ -168,7 +168,7 @@ class AuthController extends Controller
     {
         $user = $this->userModel->findByResetToken($token);
         if (!$user) {
-            die("Invalid or expired token.");
+            $this->redirect('login?error=invalid_token');
         }
         $this->view('auth.reset-password', ['token' => $token]);
     }
